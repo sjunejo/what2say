@@ -24,7 +24,7 @@ public class TopicsDataSource {
 	
 	public TopicsDataSource(Context context) {
 		dbHelper = new SQLiteHelper(context);
-	}
+	} 
 
 	public void open() throws SQLException {
 		database = dbHelper.getWritableDatabase();
@@ -55,6 +55,16 @@ public class TopicsDataSource {
 				+ " = " + id, null);
 	}
 
+	public void insertTopics(List<Topic> topics){
+		database.beginTransaction();
+		for (Topic t: topics){
+			ContentValues values = new ContentValues();
+			values.put(SQLiteHelper.COLUMN_TOPIC, t.getTopic());
+			database.insert(SQLiteHelper.TABLE_TOPICS, null, values);
+		}
+		database.setTransactionSuccessful();
+		database.endTransaction();
+	}
 	public void fillWithDefaultTopics(){ 
 		database.beginTransaction();
 		try {

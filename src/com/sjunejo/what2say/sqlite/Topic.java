@@ -5,6 +5,15 @@ public class Topic {
 	private long id;
 	private String topic;
 	
+	public Topic(){
+		
+	}
+	
+	public Topic(String str){
+		super();
+		this.setTopic(str);
+	}
+	
 	public long getId() {
 		return id;
 	}
@@ -23,7 +32,14 @@ public class Topic {
 	public String toString(){
 		return topic;
 	}
+
 	
+	@Override
+	public boolean equals(Object topic) {
+		Topic t = (Topic) topic;
+		return t.getTopic().equals(this.getTopic());
+	}
+
 	
 
 }

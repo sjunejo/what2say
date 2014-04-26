@@ -1,14 +1,14 @@
 package com.sjunejo.what2say;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,13 +17,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.sjunejo.what2say.R;
+import com.sjunejo.utils.CSVLoader;
 import com.sjunejo.what2say.sqlite.Topic;
 import com.sjunejo.what2say.sqlite.TopicsDataSource;
-
-// Tap For Tap
-import com.tapfortap.TapForTap;
-import com.tapfortap.AdView;
 
 /**
  * The main activity launched when the program is run.
@@ -47,7 +43,7 @@ public class What2SayActivity extends Activity implements OnClickListener {
         initialise();
     }
     
-    void initialise(){
+    private void initialise(){
     	btnGenerate = (Button) findViewById(R.id.btnGenerate);
     	tvTopic = (TextView) findViewById(R.id.tvTopic);
     	btnGenerate.setOnClickListener(this);
@@ -56,7 +52,23 @@ public class What2SayActivity extends Activity implements OnClickListener {
     	topicsDataSource = new TopicsDataSource(this);
     	topicsDataSource.open();
     	topics = new ArrayList<Topic>();
-    	
+    	insertCSVTopics();
+    }
+    
+    private void insertCSVTopics(){
+    	List<Topic> csvTopics = CSVLoader.getInstance().loadCSVTopics();
+
+    	Log.d("CSV_Topics", csvTopics.toString());
+    	// Don't add topics that are already in the database!
+    	List<Topic> allTopics = topicsDataSource.getAllTopics();
+    	List<Topic> duplicateTopics = new ArrayList<Topic>();
+    	duplicateTopics.addAll(csvTopics);
+    	Log.d("dup_topics", duplicateTopics.toString());
+    	duplicateTopics.retainAll(allTopics);
+    	Log.d("duplicateTopics", duplicateTopics.toString());
+    	csvTopics.removeAll(duplicateTopics);
+    	Log.d("New topics", csvTopics.toString());
+    	topicsDataSource.insertTopics(csvTopics);
     }
     
     /**
